@@ -2,7 +2,7 @@ package edu.luc.etl.cs313.android.simplestopwatch.model.state;
 
 import edu.luc.etl.cs313.android.simplestopwatch.R;
 
-class LapStoppedState implements StopwatchState {
+class LapStoppedState implements StopwatchState { // Redundant?
 
     public LapStoppedState(final StopwatchSMStateView sm) {
         this.sm = sm;
