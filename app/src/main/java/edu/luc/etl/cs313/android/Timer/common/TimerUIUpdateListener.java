@@ -10,4 +10,5 @@ package edu.luc.etl.cs313.android.Timer.common;
 public interface TimerUIUpdateListener {
     int updateTime(int time);
     void updateState(int stateId);
+    void beep();
 }

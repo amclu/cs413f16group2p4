@@ -5,12 +5,6 @@ import org.junit.Before;
 
 import edu.luc.etl.cs313.android.Timer.model.time.DefaultTimeModel;
 
-/**
- * Concrete testcase subclass for the default time model implementation.
- *
- * @author laufer
- * @see http://xunitpatterns.com/Testcase%20Superclass.html
- */
 public class DefaultTimeModelTest extends AbstractTimeModelTest {
 
     @Before

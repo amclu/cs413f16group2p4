@@ -30,7 +30,7 @@ public class ConcreteTimerModelFacade implements TimerModelFacade {
 
     @Override
     public void onStart() {
-        stateMachine.actionInit();
+        stateMachine.timInitialize();
     }
 
     @Override

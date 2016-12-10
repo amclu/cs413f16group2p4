@@ -1,34 +1,36 @@
 package edu.luc.etl.cs313.android.Timer.model.state;
 
-import edu.luc.etl.cs313.android.Timer.R;
+public class IncrementState implements TimerState {
+    private TimerStateView sm;
+    private int delay;
 
-public class IncrementState implements TimerState
-{
-    public IncrementState(final TimerStateView incState){
-        this.incState=incState;
-    }
-
-    private final TimerStateView incState;
-
-    @Override
-    public void onStartStop() {
-        incState.actionRestart();
-        incState.actionResetWaittime();
-        incState.actionIncrement();
-    }
-
-    @Override
-    public void onTick() {
-        incState.actionWaittimeInc();
+    public IncrementState(TimerStateView sm) {
+        this.sm = sm;
+        delay = 0;
     }
 
     @Override
     public void updateView() {
-        incState.updateUIRuntime();
+        sm.updateUIRuntime();
     }
 
     @Override
-    public int getId() {
-        return R.string.INCREMENT;
+    public void onStartStop() {
+        delay = 0;
+        sm.timeIncrease();
+    }
+
+    @Override
+    public void onTick() {
+        if (delay == 2) {
+            sm.toRunningState();
+        } else {
+            delay++;
+        }
+    }
+
+    @Override
+    public String getState() {
+        return "Increment";
     }
 }

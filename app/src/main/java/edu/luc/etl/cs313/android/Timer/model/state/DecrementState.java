@@ -1,36 +1,40 @@
 package edu.luc.etl.cs313.android.Timer.model.state;
 
-import edu.luc.etl.cs313.android.Timer.R;
-
 public class DecrementState implements TimerState {
 
-    public DecrementState(final TimerStateView decState){
-        this.decState=decState;
-    }
+    private TimerStateView sm;
 
-    private final TimerStateView decState;
-
-    @Override
-    public void onStartStop() {
-        decState.actionStop();
-        decState.actionReset();
-        decState.toStoppedState();
-    }
-
-    @Override
-    public void onTick()
-    {
-        decState.actionDecrement();
+    public DecrementState(TimerStateView sm) {
+        this.sm = sm;
     }
 
     @Override
     public void updateView() {
-        decState.updateUIRuntime();
+        sm.updateUIRuntime();
     }
 
     @Override
-    public int getId() {
-        return R.string.DECREMENT;
+    public void onStartStop() {
+        sm.timReset();
+        sm.timStop();
+        sm.toStoppedState();
     }
+
+    @Override
+    public void onTick() {
+        sm.timeDecrease();
+        if (sm.getTime() == 0) {
+            sm.toAlarmState();
+            return;
+        }
+
+
+    }
+
+    @Override
+    public String getState() {
+        return "Decrementing";
+    }
+
 
 }

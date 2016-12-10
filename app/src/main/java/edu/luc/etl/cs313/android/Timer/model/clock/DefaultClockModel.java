@@ -10,8 +10,6 @@ import java.util.TimerTask;
  */
 public class DefaultClockModel implements ClockModel {
 
-    // TODO make accurate by keeping track of partial seconds when canceled etc.
-
     private Timer timer;
 
     private OnTickListener listener;
@@ -25,17 +23,23 @@ public class DefaultClockModel implements ClockModel {
     public void start() {
         timer = new Timer();
 
-        // The clock model runs onTick every 1000 milliseconds
+
         timer.schedule(new TimerTask() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 // fire event
                 listener.onTick();
             }
-        }, /*initial delay*/ 1000, /*periodic delay*/ 1000);
+        }, 1000, 1000);
+
+
     }
 
     @Override
     public void stop() {
-        timer.cancel();
+        try {
+            timer.cancel();
+        } catch (Exception e) {
+        }
     }
 }

@@ -4,9 +4,6 @@ import edu.luc.etl.cs313.android.Timer.common.TimerUIUpdateListener;
 import edu.luc.etl.cs313.android.Timer.model.clock.ClockModel;
 import edu.luc.etl.cs313.android.Timer.model.time.TimeModel;
 
-import static edu.luc.etl.cs313.android.Timer.common.Constants.MAX_RUN_TIME;
-import static edu.luc.etl.cs313.android.Timer.common.Constants.MAX_WAIT_TIME;
-
 /**
  * An implementation of the state machine for the stopwatch.
  *
@@ -14,94 +11,143 @@ import static edu.luc.etl.cs313.android.Timer.common.Constants.MAX_WAIT_TIME;
  */
 public class DefaultTimerStateMachine implements TimerStateMachine {
 
-    public DefaultTimerStateMachine(final TimeModel timeModel, final ClockModel clockModel) {
-        this.timeModel = timeModel;
-        this.clockModel = clockModel;
-    }
-
-    private final TimeModel timeModel;
-
-    private final ClockModel clockModel;
-
-    /**
-     * The internal state of this adapter component. Required for the State pattern.
-     */
     private TimerState state;
+    private TimerState runningState = new DecrementState(this);
+    private TimerState stoppedState = new StoppedState(this);
+    private TimerState incrementState = new IncrementState(this);
+    private TimerState alarmState = new AlarmState(this);
+    private ClockModel clock;
+    private TimeModel time;
+    private TimerUIUpdateListener UIUpdateListener;
 
-    protected void setState(final TimerState state) {
-        this.state = state;
-        uiUpdateListener.updateState(state.getId());
+    public DefaultTimerStateMachine(TimeModel t, ClockModel c) {
+        this.clock = c;
+        this.time = t;
     }
 
-    private TimerUIUpdateListener uiUpdateListener;
+    public String getState() {
+        return this.state.getState();
+    }
+
+    public void setState(TimerState state) {
+        this.state = state;
+    }
+
+    //Updates to the time
+    @Override
+    public int getTime() {
+        return this.time.getRunningTime();
+    }
+
+    //Transitions to the time
+    @Override
+    public void toRunningState() {
+        clock.stop();
+        beep();
+        this.setState(this.runningState);
+        clock.start();
+
+    }
 
     @Override
-    public void setUIUpdateListener(final TimerUIUpdateListener uiUpdateListener) {
-        this.uiUpdateListener = uiUpdateListener;
+    public synchronized void toStoppedState() {
+        this.clock.stop();
+        this.setState(this.stoppedState);
     }
 
-    // forward event uiUpdateListener methods to the current state
-    // these must be synchronized because events can come from the
-    // UI thread or the timer thread
-    @Override public synchronized void onStartStop() { state.onStartStop(); }
-    @Override public synchronized void onTick()      { state.onTick(); }
+    @Override
+    public synchronized void toIncrementState() {
+        this.setState(this.incrementState);
+    }
 
-    @Override public void updateUIRuntime() { uiUpdateListener.updateTime(timeModel.getRunningtime()); }
+    @Override
+    public synchronized void toAlarmState() {
+        this.setState(this.alarmState);
+    }
 
+    //Actions done to the time like start stop increase and decrease depending on inputs
+    @Override
+    public synchronized void timInitialize() {
+        toStoppedState();
+        timReset();
+    }
 
-    // known states
-    private final TimerState STOPPED     = new StoppedState(this);
-    private final TimerState INCREMENT     = new IncrementState(this);
-    private final TimerState DECREMENT = new DecrementState(this);
-    private final TimerState ALARM = new AlarmState(this);
-
-    // transitions
-    @Override public void toStoppedState()    { setState(STOPPED); }
-    @Override public void toIncrementState()    { setState(INCREMENT); }
-    @Override public void toDecrementState()    { setState(DECREMENT); }
-    @Override public void toAlarmState()    { setState(ALARM); }
-
-
-    // actions
-    @Override public void actionInit()       { toStoppedState(); actionReset(); }
-    @Override public void actionReset()      { timeModel.resetRuntime(); timeModel.resetWaittime(); actionUpdateView(); }
-    @Override public void actionResetWaittime() {timeModel.resetWaittime();}
-    @Override public void actionStart()      { clockModel.start(); }
-    @Override public void actionStop()       { clockModel.stop(); }
-    @Override public void actionRestart(){clockModel.stop(); clockModel.start();}
-
-    @Override public void actionUpdateView() { state.updateView(); }
-
-    public int getRuntime()                  { return timeModel.getRunningtime(); }
-    public void actionSetRuntime(int timeValue){ timeModel.setRuntime(timeValue); actionUpdateView(); }
-
-    @Override public void actionIncrement()
-    {
-        timeModel.incRuntime();
+    @Override
+    public synchronized void timReset() {
+        time.resetRuntime();
         actionUpdateView();
-        if(timeModel.getRunningtime()==MAX_RUN_TIME)
-        {
-                toDecrementState();
-        }
-        else toIncrementState();
     }
 
-    @Override public void actionWaittimeInc(){
-        timeModel.incWaittime();
-        if(timeModel.getWaittime()==MAX_WAIT_TIME) {
-            toDecrementState();
+    @Override
+    public synchronized void timStart() {
+        clock.start();
+    }
 
+    @Override
+    public synchronized void timStop() {
+        clock.stop();
+    }
+
+    @Override
+    public synchronized void timeIncrease() {
+        if (time.getRunningTime() < 99) {
+            timStop();
+            time.incRuntime();
+            actionUpdateView();
+            if (time.getRunningTime() == 99) {
+                toRunningState();
+                return;
+            }
+            clock.start();
         }
     }
-    @Override public void actionDecrement()
-    {
-        timeModel.decRuntime();
+
+    @Override
+    public synchronized void timeDecrease() {
+
+        time.decRuntime();
         actionUpdateView();
-        if (timeModel.getRunningtime()==0)
-        {
-            toAlarmState();
 
+
+    }
+
+    @Override
+    public synchronized void actionUpdateView() {
+        state.updateView();
+    }
+
+    @Override
+    public void beep() {
+        UIUpdateListener.beep();
+    }
+
+    @Override
+    public synchronized void updateUIRuntime() {
+        int i = 0;
+
+        int ep = UIUpdateListener.updateTime(time.getRunningTime());
+        if (time.getRunningTime() < 1) {
+            while (i < ep) {
+
+                time.incRuntime();
+                i++;
+
+            }
         }
-        else toDecrementState();
+    }
+
+    @Override
+    public synchronized void onStartStop() {
+        state.onStartStop();
+    }
+
+    @Override
+    public void setUIUpdateListener(TimerUIUpdateListener listener) {
+        UIUpdateListener = listener;
+    }
+
+    @Override
+    public synchronized void onTick() {
+        this.state.onTick();
     }
 }

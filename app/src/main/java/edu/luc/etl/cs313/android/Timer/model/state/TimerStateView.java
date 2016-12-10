@@ -1,37 +1,36 @@
 package edu.luc.etl.cs313.android.Timer.model.state;
 
-/**
- * The restricted view states have of their surrounding state machine.
- * This is a client-specific interface in Peter Coad's terminology.
- *
- * @author laufer
- */
 interface TimerStateView {
+    // updates the time
+    int getTime();
 
+    // transitions the states of the time
+    void toRunningState();  //4 possible states
 
-    // transitions
     void toStoppedState();
+
     void toIncrementState();
-    void toDecrementState();
+
     void toAlarmState();
 
-    int getRuntime();
+    // actions done by the stopwatch
+    void timInitialize();
 
-    // actions
-    void actionInit();
-    void actionReset();
-    void actionResetWaittime();
-    void actionRestart();
-    void actionStart();
-    void actionStop();
-    void actionIncrement();
-    void actionDecrement();
+    void timReset();
+
+    void timStart();
+
+    void timStop();
+
+    void timeIncrease();
+
+    void timeDecrease();
+
     void actionUpdateView();
-    void actionWaittimeInc();
-    void actionSetRuntime(int timeValue);
 
-    // state-dependent UI updates
+    void beep();
+
+    // Updates the UI depending on the state
     void updateUIRuntime();
-
 
 }

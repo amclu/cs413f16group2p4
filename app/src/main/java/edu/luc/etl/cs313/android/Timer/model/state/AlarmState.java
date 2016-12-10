@@ -1,35 +1,34 @@
 package edu.luc.etl.cs313.android.Timer.model.state;
 
 
-import edu.luc.etl.cs313.android.Timer.R;
-
 public class AlarmState implements TimerState {
 
-    public AlarmState(final TimerStateView alarmState) {
-        this.alarmState = alarmState;
-    }
 
-    private final TimerStateView alarmState;
+    private TimerStateView sm;
 
-    @Override
-    public void onStartStop() {
-        alarmState.actionStop();
-        alarmState.actionReset();
-        alarmState.toStoppedState();
-    }
-
-    @Override
-    public void onTick() {
-        alarmState.toAlarmState();
+    public AlarmState(TimerStateView sm) {
+        this.sm = sm;
     }
 
     @Override
     public void updateView() {
-        alarmState.updateUIRuntime();
+        sm.updateUIRuntime();
     }
 
     @Override
-    public int getId() {
-        return R.string.ALARM;
+    public void onStartStop() {
+        sm.timReset();
+        sm.timStop();
+        sm.toStoppedState();
+    }
+
+    @Override
+    public void onTick() {
+        sm.beep();
+    }
+
+    @Override
+    public String getState() {
+        return "Alarming";
     }
 }

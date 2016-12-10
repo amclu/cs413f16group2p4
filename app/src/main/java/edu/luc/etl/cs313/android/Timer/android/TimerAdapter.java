@@ -33,7 +33,6 @@ public class TimerAdapter extends Activity implements TimerUIUpdateListener {
     public void onStart() {
         super.onStart();
         timerFacade.onStart();
-
     }
 
     /**
@@ -73,7 +72,7 @@ public class TimerAdapter extends Activity implements TimerUIUpdateListener {
     /**
      * When timer reaches 0 it plays a noise.
      */
-    public void playDefaultNotification() {
+    public void beep() {
         final Uri defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         final MediaPlayer mediaPlayer = new MediaPlayer();
         final Context context = getApplicationContext();
