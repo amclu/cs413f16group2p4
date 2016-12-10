@@ -32,16 +32,17 @@
         android:layout_below="@id/state"
         android:layout_centerHorizontal="true" >
 
-        <TextView
+        <EditText
             android:id="@+id/seconds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/seconds"
             android:textSize="80sp"
             android:textStyle="bold"
-            android:layout_alignParentBottom="false"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentStart="true"/>
+            android:clickable="true"
+            android:autoText="false"
+            android:maxLength="2"
+            android:nestedScrollingEnabled="false" />
 
     </RelativeLayout>
 

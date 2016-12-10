@@ -2,107 +2,91 @@ package edu.luc.etl.cs313.android.Timer.android;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
-import android.widget.TextView;
-
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
-
+import android.widget.EditText;
 import edu.luc.etl.cs313.android.Timer.R;
 import edu.luc.etl.cs313.android.Timer.common.TimerUIUpdateListener;
 import edu.luc.etl.cs313.android.Timer.model.ConcreteTimerModelFacade;
 import edu.luc.etl.cs313.android.Timer.model.TimerModelFacade;
+import android.content.Context;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import java.io.IOException;
 
 public class TimerAdapter extends Activity implements TimerUIUpdateListener {
+    TimerModelFacade timerFacade ;
 
-    private static String TAG = "Timer-android-activity";
-    /**
-     * The state-based dynamic model.
-     */
-    private TimerModelFacade model;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
-
-    protected void setModel(final TimerModelFacade model)
-    {
-        this.model = model;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // inject dependency on view so this adapter receives UI events
         setContentView(R.layout.activity_main);
-        // inject dependency on model into this so model receives UI events
-        this.setModel(new ConcreteTimerModelFacade());
-        // inject dependency on this into model to register for UI updates
-        model.setUIUpdateListener(this);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-    }
 
+        timerFacade = new ConcreteTimerModelFacade();
+        timerFacade.setUIUpdateListener(this);
+
+
+    }
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
+    public void onStart() {
+        super.onStart();
+        timerFacade.onStart();
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();// ATTENTION: This was auto-generated to implement the App Indexing API.
-// See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        model.onStart();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-       // AppIndex.AppIndexApi.start(client, getIndexApiAction());
-    }
-
-    // TODO remaining lifecycle methods
-
-    /**
-     * Updates the seconds in the UI.
-     *
-     * @param time
-     */
-    public void updateTime(final int time) {
-        // UI adapter responsibility to schedule incoming events on UI thread
-        runOnUiThread((new Runnable() {
-            @Override
-            public void run() {
-                final TextView tvS = (TextView) findViewById(R.id.seconds);
-                final int seconds = time % 100;
-                tvS.setText(Integer.toString(seconds / 10) + Integer.toString(seconds % 10));
-            }
-        }));
     }
 
     /**
-     * Updates the state name in the UI.
+     * Updates the UI time.
      *
-     * @param stateId
+     * @parameter time in seconds
      */
-    public void updateState(final int stateId) {
-        // UI adapter responsibility to schedule incoming events on UI thread
-        runOnUiThread((new Runnable() {
-            @Override
-            public void run() {
-                final TextView stateName = (TextView) findViewById(R.id.stateName);
-                stateName.setText(getString(stateId));
+    @Override
+    public int updateTime(int time) {
+        // Adapter used to schedule incoming UI events.
+        final EditText timeInSeconds = (EditText) findViewById(R.id.seconds);
+        int currentTime = Integer.parseInt(timeInSeconds.getText().toString());
+        runOnUiThread(() -> {
+            //enabling or disabling Text View
+            final int seconds = time;
+            if (seconds == 0){
+                timeInSeconds.setFocusable(true);
+            } else{
+                timeInSeconds.setFocusableInTouchMode(false);
             }
-        }));
-
+            timeInSeconds.setText(Integer.toString(seconds / 10) + Integer.toString(seconds % 10));
+        });
+        if (time == 0 || time == 1) {
+            return currentTime;
+        }
+        return 0;
     }
 
-    // forward event listener methods to the model
-    public void onStartStop(final View view) {
-               model.onStartStop();
+    @Override
+    public void updateState(int stateId) {
+    }
+
+    public void onStartStop(View view){
+        this.timerFacade.onStartStop();
+    }
+
+    /**
+     * When timer reaches 0 it plays a noise.
+     */
+    public void playDefaultNotification() {
+        final Uri defaultRingtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        final MediaPlayer mediaPlayer = new MediaPlayer();
+        final Context context = getApplicationContext();
+
+        try {
+            mediaPlayer.setDataSource(context, defaultRingtoneUri);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
+            mediaPlayer.prepare();
+            mediaPlayer.setOnCompletionListener(MediaPlayer::release);
+            mediaPlayer.start();
+        } catch (final IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
 

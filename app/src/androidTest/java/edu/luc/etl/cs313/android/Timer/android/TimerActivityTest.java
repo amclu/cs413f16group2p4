@@ -48,4 +48,13 @@ public class TimerActivityTest extends ActivityInstrumentationTestCase2<TimerAda
     public void testActivityScenarioRunToAlarmToStop() throws Throwable{
         actualTest.testActivityScenarioRunToAlarmToStop();
     }
+
+    /*Test to do
+    2.	testInitiallyAtMin – the click_count value is initially at its minimum (0).
+3.	testActivityTestCaseSetUpProperty – Activity launched OK.
+4.	testIncrement – one is added to the initial as well as displayed click_count value.
+5.	testIncrementRuntimeOne – times are correct after one second.
+6.	testIncrementRuntimeMany – times are correct after one min 33 seconds.
+7.	testActivityScenarioInc
+     */
 }

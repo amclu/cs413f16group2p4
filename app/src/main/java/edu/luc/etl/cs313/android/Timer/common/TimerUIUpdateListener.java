@@ -8,6 +8,6 @@ package edu.luc.etl.cs313.android.Timer.common;
  * @author laufer
  */
 public interface TimerUIUpdateListener {
-    void updateTime(int time);
+    int updateTime(int time);
     void updateState(int stateId);
 }

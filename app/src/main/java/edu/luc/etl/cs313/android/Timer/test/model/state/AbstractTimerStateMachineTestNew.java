@@ -13,15 +13,6 @@ import edu.luc.etl.cs313.android.Timer.model.time.TimeModel;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Testcase superclass for the stopwatch state machine model. Unit-tests the state
- * machine in fast-forward mode by directly triggering successive tick events
- * without the presence of a pseudo-real-time clock. Uses a single unified mock
- * object for all dependencies of the state machine model.
- *
- * @author laufer
- * @see http://xunitpatterns.com/Testcase%20Superclass.html
- */
 abstract class AbstractTimerStateMachineTest {
 
     private TimerStateMachine model;
@@ -140,8 +131,9 @@ abstract class UnifiedMockDependency implements TimeModel,ClockModel, TimerUIUpd
         return runningTime;
     }
     @Override
-    public void updateTime(final int timeValue) {
+    public int updateTime(final int timeValue) {
         this.timeValue = timeValue;
+        return timeValue;
     }
 
     @Override
