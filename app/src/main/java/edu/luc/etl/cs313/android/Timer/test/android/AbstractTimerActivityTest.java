@@ -41,84 +41,44 @@ public abstract class AbstractTimerActivityTest {
      */
     @Test
     public void testActivityScenarioInit() throws Throwable {
-        getActivity().runOnUiThread((new Runnable() {
-            @Override
-            public void run() {
-                assertEquals(0, getDisplayedValue());
-            }
-        }));
-
+        getActivity().runOnUiThread(() -> assertEquals(0, getDisplayedValue()));
     }
 
     @Test
     public void testActivityScenarioInc() throws Throwable {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                assertEquals(0, getDisplayedValue());
-                for (int i = 0; i < 9; i++) {
-                    assertTrue(getStartStopButton().performClick());
-                }
-            }
+        getActivity().runOnUiThread(() -> {
+            assertEquals(0, getDisplayedValue());
+            assertTrue(getButton().performClick());
+            performClicks(4);
         });
-        Thread.sleep(2500);
+        Thread.sleep(5500);
         runUiThreadTasks();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                assertEquals(9, getDisplayedValue());
-            }
+        getActivity().runOnUiThread(() -> {
+            assertEquals(3, getDisplayedValue());
         });
     }
 
+    /**
+     * Verifies the following:
+     * time is 0.
+     * Perform 5 clicks, wait 3 seconds to start and 1 second for time to decrement. Expect 4 seconds, click button,
+     *  expect stopped.
+     * @throws Throwable
+     */
+
     @Test
     public void testActivityScenarioRun() throws Throwable {
-        getActivity().runOnUiThread(new Runnable() { @Override public void run() {
+        getActivity().runOnUiThread(() -> {
             assertEquals(0, getDisplayedValue());
-            for (int i = 0; i < 9; i++) {
-                assertTrue(getStartStopButton().performClick());
-            }
-        }});
-        Thread.sleep(2500); // <-- do not run this in the UI thread!
-        runUiThreadTasks();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                assertEquals(9, getDisplayedValue());
-                for (int i = 0; i < 8; i++) {
-                    assertTrue(getStartStopButton().performClick());
-                }
-            }
+            assertTrue(getButton().performClick());
+            performClicks(4);
         });
-        Thread.sleep(1000); // <-- do not run this in the UI thread!
+
+        Thread.sleep(5500);
         runUiThreadTasks();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                assertEquals(9, getDisplayedValue());
-            }
+        getActivity().runOnUiThread(() -> {
+            assertEquals(3, getDisplayedValue());
         });
-        Thread.sleep(2500);
-        runUiThreadTasks();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                assertEquals(9, getDisplayedValue());
-            }
-        });
-        Thread.sleep(1000);
-        runUiThreadTasks();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                assertEquals(8, getDisplayedValue());
-            }
-        });
-        Thread.sleep(6000);
-        runUiThreadTasks();
-        getActivity().runOnUiThread(new Runnable() { @Override public void run() {
-            assertEquals(2, getDisplayedValue());
-        }});
     }
 
     protected abstract TimerAdapter getActivity();
@@ -134,6 +94,49 @@ public abstract class AbstractTimerActivityTest {
 
     protected Button getStartStopButton() {
         return (Button) getActivity().findViewById(R.id.startStop);
+    }
+
+
+    public void testActivityScenarioRunLapReset() throws Throwable{
+       //did not get what it does
+    }
+
+    @Test
+    public void testActivityScenarioRunToAlarmToStop() throws Throwable{
+        getActivity().runOnUiThread(() -> {
+            assertEquals(0, getDisplayedValue());
+            getActivity().runOnUiThread(()->performClicks(6));
+        });
+
+        Thread.sleep(8500);
+        getActivity().runOnUiThread(() -> {
+            assertEquals(2, getDisplayedValue());
+            assertTrue(getButton().performClick());
+            assertEquals(0, getDisplayedValue());
+        });
+    }
+    /**
+     * Verifies the following:
+     * time is 0.
+     * Perform 6 clicks, wait 8 seconds till counter reaches 2 after decrementing ( 3 + 1 + 4 ).
+     *  Expect 2 seconds, click button,
+     *  expect stopped.
+     * @throws Throwable
+     */
+
+    /**
+     * Auxiliar methods to access the view elements
+     */
+
+    protected Button getButton() {
+        return (Button) getActivity().findViewById(R.id.startStop);
+    }
+
+    protected void performClicks(int click){
+        Button b = getButton();
+        for (int i = 0; i < click; i ++){
+            b.performClick();
+        }
     }
 
     protected void runUiThreadTasks() {
