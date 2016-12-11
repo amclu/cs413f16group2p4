@@ -136,6 +136,52 @@ public abstract class AbstractTimerActivityTest {
             assertEquals(0, getDisplayedValue());
         });
     }
+
+    /**
+     * Verifies the timer waits for 3 seconds to start dec:
+     * time is 0.
+     * Perform 4 clicks, wait 2.5 seconds, expect display value 4.
+     * @throws Throwable
+     */
+
+    @Test
+    public void testActivityScenarioWaitingPeriod() throws Throwable{
+        getActivity().runOnUiThread(() -> {
+            assertEquals(0, getDisplayedValue());
+            getActivity().runOnUiThread(()->performClicks(4));
+        });
+
+        Thread.sleep(2500);
+        runUiThreadTasks();
+        getActivity().runOnUiThread(() -> {
+            assertEquals(4, getDisplayedValue());
+        });
+    }
+
+    /**
+     * Verifies the timer has max value = 99:
+     * time is 0.
+     * Perform 99 clicks, click again once, display value remains 99,
+     * wait 4.5 seconds, perform click 1,
+     * changed to stopped state and value is 0.
+     * @throws Throwable
+     */
+
+    @Test
+    public void testActivityScenarioMaxValueCheck() throws Throwable{
+        getActivity().runOnUiThread(() -> {
+            assertEquals(0, getDisplayedValue());
+            getActivity().runOnUiThread(()->performClicks(99));
+            //getActivity().runOnUiThread(()->performClicks(1));
+            //assertEquals(99, getDisplayedValue());(Only if after reaches max clicking is ignored)
+        });
+
+        Thread.sleep(4500);
+        getActivity().runOnUiThread(() -> {
+            getActivity().runOnUiThread(()->performClicks(1));
+            assertEquals(0, getDisplayedValue());
+        });
+    }
     /**
      * Verifies the following:
      * time is 0.
