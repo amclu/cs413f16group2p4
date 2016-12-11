@@ -45,21 +45,24 @@ public class TimerAdapter extends Activity implements TimerUIUpdateListener {
         // Adapter used to schedule incoming UI events.
         final EditText timeInSeconds = (EditText) findViewById(R.id.seconds);
         int currentTime = Integer.parseInt(timeInSeconds.getText().toString());
-        runOnUiThread(() -> {
-            //enabling or disabling Text View
-            final int seconds = time;
-            if (seconds == 0){
-                if(isOnStopped) {
-                    timeInSeconds.setFocusable(true);
-                    timeInSeconds.setFocusableInTouchMode(true);
-                }
-            } else{
-                timeInSeconds.setFocusable(false);
-                timeInSeconds.setFocusableInTouchMode(false);
-            }
-            timeInSeconds.setText(Integer.toString(seconds / 10) + Integer.toString(seconds % 10));
-        });
-        if (time == 0) {
+        if(time != -1) {
+            runOnUiThread(() -> {
+                //enabling or disabling Text View
+                final int seconds = time;
+                timeInSeconds.setFocusable(isOnStopped);
+                timeInSeconds.setFocusableInTouchMode(isOnStopped);
+                timeInSeconds.setText(Integer.toString(seconds / 10) + Integer.toString(seconds % 10));
+            });
+        }else{
+            runOnUiThread(() -> {
+                //enabling or disabling Text View
+                final int seconds = currentTime;
+                timeInSeconds.setFocusable(isOnStopped);
+                timeInSeconds.setFocusableInTouchMode(isOnStopped);
+                timeInSeconds.setText(Integer.toString(seconds / 10) + Integer.toString(seconds % 10));
+            });
+        }
+        if(time == -1) {
             return currentTime;
         }
         return 0;

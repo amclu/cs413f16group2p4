@@ -16,8 +16,6 @@ public class DecrementState implements TimerState {
     @Override
     public void onStartStop() {
         sm.timReset();
-        sm.timStop();
-        sm.toStoppedState();
     }
 
     @Override

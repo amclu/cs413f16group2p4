@@ -19,6 +19,8 @@ public class DefaultTimeModel implements TimeModel {
 
     @Override
     public void decRuntime() {
+
+        if(this.runTime > 0)
         this.runTime -= 1;
     }
 
