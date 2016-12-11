@@ -51,7 +51,6 @@ public class DefaultTimerStateMachine implements TimerStateMachine {
 
     @Override
     public synchronized void toStoppedState() {
-        this.clock.stop();
         this.setState(this.stoppedState);
     }
 
@@ -65,7 +64,6 @@ public class DefaultTimerStateMachine implements TimerStateMachine {
         this.setState(this.alarmState);
     }
 
-    //Actions done to the time like start stop increase and decrease depending on inputs
     @Override
     public synchronized void timInitialize() {
         toStoppedState();
@@ -75,6 +73,8 @@ public class DefaultTimerStateMachine implements TimerStateMachine {
     @Override
     public synchronized void timReset() {
         time.resetRuntime();
+        clock.stop();
+        toStoppedState();
         actionUpdateView();
     }
 
@@ -90,16 +90,17 @@ public class DefaultTimerStateMachine implements TimerStateMachine {
 
     @Override
     public synchronized void timeIncrease() {
-        if (time.getRunningTime() < 99) {
+        if(time.getRunningTime() >= 99){
+            toRunningState();
+        }else{
             timStop();
+            if(time.getRunningTime() == 0){
+                time.setRunningTime(UIUpdateListener.updateTime(time.getRunningTime(), this.state.equals(stoppedState)));
+            }
             time.incRuntime();
             actionUpdateView();
-            if (time.getRunningTime() == 99) {
-                toRunningState();
-                return;
-            }
-            clock.start();
         }
+        timStart();
     }
 
     @Override
@@ -123,17 +124,7 @@ public class DefaultTimerStateMachine implements TimerStateMachine {
 
     @Override
     public synchronized void updateUIRuntime() {
-        int i = 0;
-
-        int ep = UIUpdateListener.updateTime(time.getRunningTime());
-        if (time.getRunningTime() < 1) {
-            while (i < ep) {
-
-                time.incRuntime();
-                i++;
-
-            }
-        }
+        int ep = UIUpdateListener.updateTime(time.getRunningTime(),this.state.equals(stoppedState));
     }
 
     @Override

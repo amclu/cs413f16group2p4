@@ -41,7 +41,7 @@ public class TimerAdapter extends Activity implements TimerUIUpdateListener {
      * @parameter time in seconds
      */
     @Override
-    public int updateTime(int time) {
+    public int updateTime(int time, boolean isOnStopped) {
         // Adapter used to schedule incoming UI events.
         final EditText timeInSeconds = (EditText) findViewById(R.id.seconds);
         int currentTime = Integer.parseInt(timeInSeconds.getText().toString());
@@ -49,20 +49,20 @@ public class TimerAdapter extends Activity implements TimerUIUpdateListener {
             //enabling or disabling Text View
             final int seconds = time;
             if (seconds == 0){
-                timeInSeconds.setFocusable(true);
+                if(isOnStopped) {
+                    timeInSeconds.setFocusable(true);
+                    timeInSeconds.setFocusableInTouchMode(true);
+                }
             } else{
+                timeInSeconds.setFocusable(false);
                 timeInSeconds.setFocusableInTouchMode(false);
             }
             timeInSeconds.setText(Integer.toString(seconds / 10) + Integer.toString(seconds % 10));
         });
-        if (time == 0 || time == 1) {
+        if (time == 0) {
             return currentTime;
         }
         return 0;
-    }
-
-    @Override
-    public void updateState(int stateId) {
     }
 
     public void onStartStop(View view){

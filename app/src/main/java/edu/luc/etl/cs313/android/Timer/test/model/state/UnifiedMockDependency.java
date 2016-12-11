@@ -17,6 +17,7 @@ public class UnifiedMockDependency implements TimeModel, ClockModel, TimerUIUpda
     private int runTime = 0;
 
     private boolean started = false;
+    private boolean isOnStopped = false;
 
     public int getTime() {
         return timeValue;
@@ -32,14 +33,10 @@ public class UnifiedMockDependency implements TimeModel, ClockModel, TimerUIUpda
     }
 
     @Override
-    public int updateTime(final int timeValue) {
+    public int updateTime(final int timeValue, final boolean isOnStopped) {
         this.timeValue = timeValue;
+        this.isOnStopped = isOnStopped;
         return timeValue;
-    }
-
-    @Override
-    public void updateState(final int stateId) {
-        this.stateId = stateId;
     }
 
     @Override

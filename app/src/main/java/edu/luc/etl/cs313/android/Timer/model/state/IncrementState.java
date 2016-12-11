@@ -23,6 +23,7 @@ public class IncrementState implements TimerState {
     @Override
     public void onTick() {
         if (delay == 2) {
+            delay = 0;
             sm.toRunningState();
         } else {
             delay++;

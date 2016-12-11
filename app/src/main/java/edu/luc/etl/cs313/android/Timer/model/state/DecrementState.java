@@ -27,8 +27,6 @@ public class DecrementState implements TimerState {
             sm.toAlarmState();
             return;
         }
-
-
     }
 
     @Override

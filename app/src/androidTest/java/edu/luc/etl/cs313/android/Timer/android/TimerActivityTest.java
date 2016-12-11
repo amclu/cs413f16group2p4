@@ -16,6 +16,8 @@ import edu.luc.etl.cs313.android.Timer.test.android.AbstractTimerActivityTest;
  */
 public class TimerActivityTest extends ActivityInstrumentationTestCase2<TimerAdapter> {
 
+    private AbstractTimerActivityTest actualTest;
+
     /**
      * Creates an {@link ActivityInstrumentationTestCase2} for the
      * {@link SkeletonActivity} activity.
@@ -31,9 +33,7 @@ public class TimerActivityTest extends ActivityInstrumentationTestCase2<TimerAda
         };
     }
 
-    private AbstractTimerActivityTest actualTest;
-
-    public void testActivityCheckTestCaseSetUpProperly() {
+    /*public void testActivityCheckTestCaseSetUpProperly() {
         actualTest.testActivityCheckTestCaseSetUpProperly();
     }
 
@@ -45,9 +45,15 @@ public class TimerActivityTest extends ActivityInstrumentationTestCase2<TimerAda
         actualTest.testActivityScenarioRunLapReset();
     }
 
-    public void testActivityScenarioRunToAlarmToStop() throws Throwable{
+    public void testActivityScenarioRunToAlarmToStop() throws Throwable {
         actualTest.testActivityScenarioRunToAlarmToStop();
+    }*/
+
+    public void testActivityScenarioSetValueTo90() throws Throwable {
+        actualTest.testActivityScenarioSetValueTo90();
     }
+
+
 
     /*Test to do
     2.	testInitiallyAtMin – the click_count value is initially at its minimum (0).

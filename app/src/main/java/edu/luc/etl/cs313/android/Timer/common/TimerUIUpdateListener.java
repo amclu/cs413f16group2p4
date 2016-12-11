@@ -8,7 +8,7 @@ package edu.luc.etl.cs313.android.Timer.common;
  * @author laufer
  */
 public interface TimerUIUpdateListener {
-    int updateTime(int time);
-    void updateState(int stateId);
+    int updateTime(int time, boolean isOnStopped);
+
     void beep();
 }

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Timer;
@@ -89,7 +90,7 @@ public abstract class AbstractTimerActivityTest {
 
     protected int getDisplayedValue() {
         final TextView ts = (TextView) getActivity().findViewById(R.id.seconds);
-        return  convertTextViewToInt(ts);
+        return  Integer.parseInt(ts.getText().toString().trim());
     }
 
     protected Button getStartStopButton() {
@@ -115,6 +116,26 @@ public abstract class AbstractTimerActivityTest {
             assertEquals(0, getDisplayedValue());
         });
     }
+
+
+    @Test
+    public void testActivityScenarioSetValueTo90() throws Throwable{
+        getActivity().runOnUiThread(() -> {
+            getEditText().setText("90");
+        });
+
+        Thread.sleep(2000);
+        getActivity().runOnUiThread(() -> {
+            assertTrue(getButton().performClick());
+            System.out.print(getEditText().getText());
+
+        });
+        Thread.sleep(8000);
+        getActivity().runOnUiThread(() -> {
+            assertTrue(getButton().performClick());
+            assertEquals(0, getDisplayedValue());
+        });
+    }
     /**
      * Verifies the following:
      * time is 0.
@@ -128,6 +149,9 @@ public abstract class AbstractTimerActivityTest {
      * Auxiliar methods to access the view elements
      */
 
+    protected EditText getEditText(){
+        return (EditText) getActivity().findViewById(R.id.seconds);
+    }
     protected Button getButton() {
         return (Button) getActivity().findViewById(R.id.startStop);
     }
@@ -137,6 +161,10 @@ public abstract class AbstractTimerActivityTest {
         for (int i = 0; i < click; i ++){
             b.performClick();
         }
+    }
+    protected void setValueOfText(int value){
+        EditText field = getEditText();
+        field.setText(value);
     }
 
     protected void runUiThreadTasks() {
